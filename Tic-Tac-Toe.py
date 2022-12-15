@@ -1,8 +1,13 @@
-# Игра "Крестики-Нолики" v1.0
+# Игра "Крестики-Нолики" v1.1
 
 from colorama import init
 
 init()
+
+
+def game_greet():
+    print(f'{cr_yell}Вас приветствует игра '
+          f'"{cr_green}Крестики-Нолики{cr_yell}"{cr_end}')
 
 
 def draw_play_field(x):
@@ -66,8 +71,9 @@ player = 1
 text = ''
 win = [False, '']
 num_cell = [1, 2, 3]
-field = [['•', '•', '•'], ['•', '•', '•'], ['•', '•', '•']]
+field = [['•'] * 3 for i in range(3)]
 
+game_greet()
 while num_moves <= max_moves:
     if player > 2:
         player = 1
@@ -75,20 +81,29 @@ while num_moves <= max_moves:
     text = f'Сейчас ходит: {player_color[player - 1]}' \
            f'{cage_filler[player]}{cr_end} "{player_name[player - 1]}"'
     print(f'Ход #{num_moves} - {text}')
-    mh, mv = map(int, input('Введите два числа через пробел для позиции '
-                            'клетки по горизонтали и вертикали:\n').split())
-    mh, mv = abs(mh), abs(mv)
+    pos = input('Введите два числа через пробел для позиции '
+                'клетки по горизонтали и вертикали:\n').split()
+    if len(pos) != 2:
+        print(f'\n{cr_green}Пожалуйста введите через пробел '
+              f'два числа от 1-3 для хода:{cr_end}')
+        continue
+    mh, mv = pos
+    if not mh.isdigit() or not mv.isdigit():
+        print(f'\n{cr_green}Пожалуйста введите через пробел '
+              f'только две цифры от 1-3 для хода:{cr_end}')
+        continue
+    mh, mv = abs(int(pos[0])), abs(int(pos[1]))
     if mh not in num_cell or mv not in num_cell:
         print(f'\n{cr_green}Такой клетки на игровом поле нет! '
               f'Пожалуйста выберите клетку от 1-3 для хода:{cr_end}')
         continue
     nv, nh = mv - 1, mh - 1
-    if field[nv][nh] == cage_filler[0]:
-        field[nv][nh] = cage_filler[player]
-    else:
+    if field[nv][nh] != cage_filler[0]:
         print(f'\n{cr_green}Эта клетка поля уже занята! '
               f'Пожалуйста выберите другую клетку для хода:{cr_end}')
         continue
+    else:
+        field[nv][nh] = cage_filler[player]
     check_win(field)
     if win[0]:
         break
